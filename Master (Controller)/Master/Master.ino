@@ -115,8 +115,11 @@ void loop() {
     loopTmr = millis();
     LineSensor_Scan();
     xspeed /= abs(0 - linePos) / 20 + 1; 
-    if(abs(linePos) > 11){
-      PID_SetConstants(0.57, 0.1, 1.2);  // Konstanta PID (kP, kI, kD).
+    if(abs(linePos) > 14){
+      PID_SetConstants(0.6, 0.1, 1.2);  // Konstanta PID (kP, kI, kD).
+    }
+    else if(abs(linePos) > 11){
+      PID_SetConstants(0.4, 0.1, 1.2);  // Konstanta PID (kP, kI, kD).
     }
     else{
       PID_SetConstants(0.15, 0.005, 0.78);  // Konstanta PID (kP, kI, kD).
