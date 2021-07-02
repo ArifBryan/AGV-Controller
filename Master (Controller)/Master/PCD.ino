@@ -36,7 +36,7 @@ void PCD_Handler(){
   if(digitalRead(PCD1_INT_PIN) == LOW){
     pcd1.PICC_ReadCardSerial();
     uint8_t uid[6];
-    memcpy(uid, pcd1.uid.uidByte, 6);
+    memcpy(uid, pcd1.uid.uidByte, 4);
     _PCD1Handler(uid);
     pcd1.PCD_WriteRegister(pcd1.ComIrqReg, 0x7F);
     pcd1.PICC_HaltA();
@@ -44,12 +44,12 @@ void PCD_Handler(){
   if(digitalRead(PCD2_INT_PIN) == LOW){
     pcd2.PICC_ReadCardSerial();
     uint8_t uid[6];
-    memcpy(uid, pcd2.uid.uidByte, 6);
+    memcpy(uid, pcd2.uid.uidByte, 4);
     _PCD2Handler(uid);
     pcd2.PCD_WriteRegister(pcd2.ComIrqReg, 0x7F);
     pcd2.PICC_HaltA();
   }
-  if(millis() - pcdTmr >= 200){
+  if(millis() - pcdTmr >= 80){
     pcdTmr = millis();
     activateRec(pcd1);
     activateRec(pcd2);

@@ -33,7 +33,7 @@ float PID_Calculate(float Sp, float Av){
 
   _pidSumError += e;
   _pidSumError = (_pidSumError > 1.0 ? 1.0 : (_pidSumError < -1.0 ? -1.0 : _pidSumError));
-  if(_pidLastError * e < 0 && 0){
+  if(_pidLastError * e < 0){
     _pidSumError = 0;
   }
 

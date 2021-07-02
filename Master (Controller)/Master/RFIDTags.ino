@@ -1,0 +1,39 @@
+#include <Arduino.h>
+
+#define RFID_TAG_COUNT  10
+
+uint8_t tagLUT[RFID_TAG_COUNT][5] = {
+    {0x4A, 0x8A, 0x85, 0xC6},
+    {0x5A, 0x33, 0x96, 0xC6},
+    {0x5A, 0x62, 0x93, 0xC6},
+    {0x8A, 0x16, 0xA1, 0xC6},
+    {0x0A, 0x2A, 0x9C, 0xC6},
+    {0xFA, 0xBa, 0x8E, 0xC6},
+    {0x5A, 0x5C, 0x7B, 0xC6},
+    {0x7A, 0x8B, 0x7E, 0xC6},
+    {0x5A, 0x63, 0x8F, 0xC6},
+    {0x04, 0x46, 0xD4, 0x2B}
+};
+
+bool Tag_Compare(uint8_t uid1[4], uint8_t uid2[4]){
+    bool res = 1;
+
+    for(uint8_t i = 0; i < 4; i ++){
+        res &= uid1[i] == uid2[i];
+    }
+
+    return res;
+}
+
+uint8_t Tag_Lookup(uint8_t uid[4]){
+    uint8_t idx = 0;
+
+    for(uint8_t i = 0; i < RFID_TAG_COUNT; i ++){
+        if(Tag_Compare(uid, tagLUT[i])){
+            idx = i + 1;
+            break;
+        }
+    }
+
+    return idx;
+}

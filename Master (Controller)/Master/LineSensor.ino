@@ -85,18 +85,18 @@ int8_t LineSensor1_Position(uint8_t mode){
       }
       if(l != 0 && r != 0){
         l = 16 - l;
-        pos1 = 4 - r;
-//        if(r == 1 && l == 1){
-//          pos1 = 4 - r;
-//          pos1 *= 2;
-//        }
-//        else if(r > 1 && (r < 10 && l > 1)){
-//          pos1 = 4 - r;
-//          pos1 *= 2;
-//        }
-//        else{
-//          pos1 = l - r;
-//        }
+        //pos1 = 4 - r;
+        if(r == 1 && l == 1){
+          pos1 = 8 - r;
+          pos1 *= 2;
+        }
+        else if(l > 1){
+          pos1 = 8 - r;
+          pos1 *= 2;
+        }
+        else{
+          pos1 = l - r;
+        }
       }
       else{
         if(pos1 < 0){pos1 = -15;}

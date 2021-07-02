@@ -1,3 +1,4 @@
+#include <Arduino.h>
 #include <Wire.h>
 #include <LiquidCrystal_I2C.h>
 
@@ -114,16 +115,22 @@ void loop() {
     loopTmr = millis();
     LineSensor_Scan();
     xspeed /= abs(0 - linePos) / 20 + 1; 
+    if(abs(linePos) > 11){
+      PID_SetConstants(0.57, 0.1, 1.2);  // Konstanta PID (kP, kI, kD).
+    }
+    else{
+      PID_SetConstants(0.15, 0.005, 0.78);  // Konstanta PID (kP, kI, kD).
+    }
     if(driveMode != DRIVE_STOP){      if(steeringMode == STEER_NORMAL){
         if(driveMode == DRIVE_FORWARD){
           //PID_SetConstants(0.7, 0.0, 0.0);  // Konstanta PID (kP, kI, kD).
-          PID_SetConstants(0.14, 0.01, 0.75);  // Konstanta PID (kP, kI, kD).
+          //PID_SetConstants(0.14, 0.001, 0.75);  // Konstanta PID (kP, kI, kD).
           PID_Calculate(0, linePos);
           Drive(xspeed, PID_GetU() * 1.5, PID_GetU()); // Drive robot (X, w0, w1);  
           //Drive(0, 0, PID_GetU() * 0.20); // Drive robot (X, w0, w1);    
         }
         else if(driveMode == DRIVE_REVERSE){
-          PID_SetConstants(0.15, 0.000, 0.75);  // Konstanta PID (kP, kI, kD).
+          //PID_SetConstants(0.15, 0.001, 0.75);  // Konstanta PID (kP, kI, kD).
           PID_Calculate(0, linePos);
           Drive(-xspeed, -PID_GetU() * 1.5, PID_GetU()); // Drive robot (X, w0, w1);   
           //Drive(0, 0, PID_GetU() * 0.20); // Drive robot (X, w0, w1);     
@@ -131,14 +138,14 @@ void loop() {
       }
       else if(steeringMode == STEER_AGGRESIVE){
         if(driveMode == DRIVE_FORWARD){
-          PID_SetConstants(0.8, 0.1, 0.7);  // Konstanta PID (kP, kI, kD).
+          //PID_SetConstants(0.8, 0.1, 0.7);  // Konstanta PID (kP, kI, kD).
           //PID_SetConstants(0.13, 0.1, 0.5);  // Konstanta PID (kP, kI, kD).
           PID_Calculate(0, linePos);
           Drive(xspeed / 2, PID_GetU() * 1.5, PID_GetU()); // Drive robot (X, w0, w1);  
           //Drive(0, 0, PID_GetU() * 0.20); // Drive robot (X, w0, w1);    
         }
         else if(driveMode == DRIVE_REVERSE){
-          PID_SetConstants(0.13, 0.00, 0.6);  // Konstanta PID (kP, kI, kD).
+          //PID_SetConstants(0.13, 0.00, 0.6);  // Konstanta PID (kP, kI, kD).
           PID_Calculate(0, linePos);
           Drive(-xspeed / 2, -PID_GetU() * 1.5, PID_GetU()); // Drive robot (X, w0, w1);   
           //Drive(0, 0, PID_GetU() * 0.20); // Drive robot (X, w0, w1);        
@@ -279,23 +286,14 @@ void Drive(float x, float w0, float w1){
   Slave_PID_SetPoint(SLAVE3ID, (-x - w0));    // Right
 }
 
-void PCD1_CallbackHandler(uint8_t uid[6]){
+void PCD1_CallbackHandler(uint8_t uid[4]){
   Serial.print("PCD1: ");
-  for(uint8_t i = 0; i < 6; i++){
-    Serial.print(uid[i], HEX);
-    Serial.print(':');
-  }
-  Serial.println();
+  Serial.println(Tag_Lookup(uid));
   PCD1_Detect = true;
 }
 
-void PCD2_CallbackHandler(uint8_t uid[6]){
+void PCD2_CallbackHandler(uint8_t uid[4]){
   Serial.print("PCD2: ");
-  for(uint8_t i = 0; i < 6; i++){
-    Serial.print(uid[i], HEX);
-    Serial.print(':');
-  }
-  Serial.println();
+  Serial.println(Tag_Lookup(uid));
   PCD2_Detect = true;
-  
 }
