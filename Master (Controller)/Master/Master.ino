@@ -7,14 +7,10 @@
 #define DRIVE_NORTHWEST   2
 #define DRIVE_NORTHEAST   3
 #define DRIVE_WEST        4
-#define DRIVE_WESTNORTH   5
-#define DRIVE_WESTSOUTH   6
-#define DRIVE_SOUTH       7
-#define DRIVE_SOUTHWEST   8
-#define DRIVE_SOUTHEAST   9
-#define DRIVE_EAST        10
-#define DRIVE_EASTNORTH   11
-#define DRIVE_EASTSOUTH   12
+#define DRIVE_SOUTH       5
+#define DRIVE_SOUTHWEST   6
+#define DRIVE_SOUTHEAST   7
+#define DRIVE_EAST        8
 
 #define PCD_RIGHT 0
 #define PCD_LEFT  1

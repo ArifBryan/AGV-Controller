@@ -7,14 +7,10 @@
 #define DRIVE_NORTHWEST   2
 #define DRIVE_NORTHEAST   3
 #define DRIVE_WEST        4
-#define DRIVE_WESTNORTH   5
-#define DRIVE_WESTSOUTH   6
-#define DRIVE_SOUTH       7
-#define DRIVE_SOUTHWEST   8
-#define DRIVE_SOUTHEAST   9
-#define DRIVE_EAST        10
-#define DRIVE_EASTNORTH   11
-#define DRIVE_EASTSOUTH   12
+#define DRIVE_SOUTH       5
+#define DRIVE_SOUTHWEST   6
+#define DRIVE_SOUTHEAST   7
+#define DRIVE_EAST        8
 
 #define HEAD_FRONT  0
 #define HEAD_REAR   1
@@ -36,13 +32,13 @@
 #define MFL  4  // Flip-Left
 #define MFR  5  // Flip-Right
 
-uint8_t _driveLUT[5][12] = {
-// N    NW   NE   W    WN   WS   S    SW   SE   E    EN   ES  //
-  {MSF, MSL, MSR, MSL, MSL, MFL, MFF, MFL, MFR, MSR, MSR, MFR}, // 0
-  {MSF, MSL, MSR, MSL, MSL, MFR, MFF, MFR, MFL, MSR, MSR, MFL}, // N
-  {MSR, MSR, MFL, MSF, MSR, MSL, MSL, MSL, MFR, MFF, MFL, MFR}, // W
-  {MFF, MFL, MFR, MSR, MFL, MSR, MSF, MSR, MSL, MSL, MFR, MSL}, // S
-  {MSL, MFR, MSL, MFF, MFR, MFL, MSR, MFL, MSR, MSF, MSL, MSR}  // E
+uint8_t _driveLUT[5][9] = {
+// N    NW   NE   W    S    SW   SE   E     //
+  {MSF, MSL, MSR, MSL, MFF, MFL, MFR, MSR}, // 0
+  {MSF, MSL, MSR, MSL, MFF, MFR, MFL, MSR}, // N
+  {MSR, MSR, MFL, MSF, MSL, MSL, MFR, MFF}, // W
+  {MFF, MFL, MFR, MSR, MSF, MSR, MSL, MSL}, // S
+  {MSL, MFR, MSL, MFF, MSR, MFL, MSR, MSF}  // E
 };
 
 uint8_t _drive;
@@ -100,11 +96,11 @@ void Motion_Drive(uint8_t drive, int16_t vel){
         break;
         case MSL:
           if(_heading == HEADING_UNKNOWN) _head = 0;
-          _lineMode = LINE_MODE_LEFT;
+          _lineMode = LINE_MODE_RIGHT;
         break;
         case MSR:
           if(_heading == HEADING_UNKNOWN) _head = 0;
-          _lineMode = LINE_MODE_RIGHT;
+          _lineMode = LINE_MODE_LEFT;
         break;
         case MFF:
           if(_heading == HEADING_UNKNOWN) _head = 1;
@@ -148,7 +144,7 @@ void Motion_Handler(){
     
     int16_t xspeed = 0; 
     if(_lineMode != LINE_MODE_CENTER){
-      xspeed = _xVel / 2 / (abs(0 - linePos) / 20 + 1);       
+      xspeed = _xVel / 1.7 / (abs(0 - linePos) / 20 + 1);       
     }
     else{
       xspeed = _xVel / (abs(0 - linePos) / 20 + 1); 
@@ -157,7 +153,7 @@ void Motion_Handler(){
       PID_SetConstants(0.6, 0.1, 1.2);  // Konstanta PID (kP, kI, kD).
     }
     else if(abs(linePos) > 8){
-      PID_SetConstants(0.25, 0.05, 1.2);  // Konstanta PID (kP, kI, kD).
+      PID_SetConstants(0.26, 0.05, 1.2);  // Konstanta PID (kP, kI, kD).
     }
     else{
       PID_SetConstants(0.15, 0.005, 0.78);  // Konstanta PID (kP, kI, kD).
@@ -165,12 +161,12 @@ void Motion_Handler(){
     if(_drive != DRIVE_STOP){      
       if(_head == HEAD_FRONT){
         PID_Calculate(0, linePos);
-        Drive(xspeed, PID_GetU() * 1.2, PID_GetU()); // Drive robot (X, w0, w1);  
+        Drive(xspeed, PID_GetU() * 1.0, PID_GetU()); // Drive robot (X, w0, w1);  
         //Drive(0, 0, PID_GetU() * 0.20); // Drive robot (X, w0, w1);    
       }
       else if(_head == HEAD_REAR){
         PID_Calculate(0, linePos);
-        Drive(-xspeed, PID_GetU() * 1.2, -PID_GetU()); // Drive robot (X, w0, w1);   
+        Drive(-xspeed, PID_GetU() * 1.0, -PID_GetU()); // Drive robot (X, w0, w1);   
         //Drive(0, 0, PID_GetU() * 0.20); // Drive robot (X, w0, w1);     
       }
     }

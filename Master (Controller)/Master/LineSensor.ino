@@ -122,11 +122,11 @@ int8_t LineSensor1_Position(uint8_t mode){
         r = 16 - r;
         //pos1 = 4 - l;
         if(l == 1 && r == 1){
-          pos1 = 8 - l;
+          pos1 = 7 - l;
           pos1 *= 2;
         }
         else if(r > 1){
-          pos1 = 8 - l;
+          pos1 = 7 - l;
           pos1 *= 2;
         }
         else{
@@ -148,11 +148,11 @@ int8_t LineSensor1_Position(uint8_t mode){
         l = l - 16;
         //pos1 = 4 - l;
         if(l == 1 && r == 1){
-          pos1 = r - 8;
+          pos1 = r - 7;
           pos1 *= 2;
         }
         else if(l > 1){
-          pos1 = r - 8;
+          pos1 = r - 7;
           pos1 *= 2;
         }
         else{
@@ -204,11 +204,11 @@ int8_t LineSensor2_Position(uint8_t mode){
         r = 16 - r;
         //pos2 = 4 - l;
         if(l == 1 && r == 1){
-          pos2 = 8 - l;
+          pos2 = 7 - l;
           pos2 *= 2;
         }
         else if(r > 1){
-          pos2 = 8 - l;
+          pos2 = 7 - l;
           pos2 *= 2;
         }
         else{
@@ -230,11 +230,11 @@ int8_t LineSensor2_Position(uint8_t mode){
         l = l - 16;
         //pos2 = 4 - l;
         if(l == 1 && r == 1){
-          pos2 = r - 8;
+          pos2 = r - 7;
           pos2 *= 2;
         }
         else if(l > 1){
-          pos2 = r - 8;
+          pos2 = r - 7;
           pos2 *= 2;
         }
         else{
