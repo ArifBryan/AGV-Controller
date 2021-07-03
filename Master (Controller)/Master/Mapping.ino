@@ -84,9 +84,11 @@ void Mapping_Destination(uint8_t dest){
       case HEADING_UNKNOWN:
         if(LineSensor_NumDetected(Motion_GetHead()) >= 13 || map_StopAtEndpoint){
           Motion_Drive(DRIVE_SOUTH);
+          map_StopAtEndpoint = false;
         }
         else{
           Motion_Drive(DRIVE_NORTH);
+          map_StopAtEndpoint = true;
         }
       break;
     }
@@ -186,9 +188,9 @@ void Mapping_RFIDHandler(uint8_t pcdNum, uint8_t uid[4]){
       if(map_JunctionEndpoint[map_Destination - 1][1] == Motion_GetHeading()){
         map_StopAtEndpoint = true;
       }
-      else{
-        map_StopAtEndpoint = false;
-      }
+    }
+    else{
+      map_StopAtEndpoint = false;
     }
   }
 }

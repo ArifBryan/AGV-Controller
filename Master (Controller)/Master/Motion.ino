@@ -86,7 +86,7 @@ void Motion_Drive(uint8_t drive){
 
 void Motion_Drive(uint8_t drive, int16_t vel){
   _xVel = vel;
-  if(drive != _drive){
+  if(drive != _drive || 1){
     _drive = drive;
     if(_drive != DRIVE_STOP){
       switch(_driveLUT[_heading][_drive - 1]){
@@ -104,18 +104,36 @@ void Motion_Drive(uint8_t drive, int16_t vel){
         break;
         case MFF:
           if(_heading == HEADING_UNKNOWN) _head = 1;
-          else _HeadFlip();
+          else{
+            _HeadFlip();
+            PID_Reset();
+            Slave_Init(SLAVE1ID);
+            Slave_Init(SLAVE2ID);
+            Slave_Init(SLAVE3ID);
+          }
           _lineMode = LINE_MODE_CENTER;
         break;
         case MFL:
           if(_heading == HEADING_UNKNOWN) _head = 1;
-          else _HeadFlip();
-          _lineMode = LINE_MODE_LEFT;
+          else{
+            _HeadFlip();
+            PID_Reset();
+            Slave_Init(SLAVE1ID);
+            Slave_Init(SLAVE2ID);
+            Slave_Init(SLAVE3ID);
+          }
+          _lineMode = LINE_MODE_RIGHT;
         break;
         case MFR:
           if(_heading == HEADING_UNKNOWN) _head = 1;
-          else _HeadFlip();
-          _lineMode = LINE_MODE_RIGHT;
+          else{
+            _HeadFlip();
+            PID_Reset();
+            Slave_Init(SLAVE1ID);
+            Slave_Init(SLAVE2ID);
+            Slave_Init(SLAVE3ID);
+          }
+          _lineMode = LINE_MODE_LEFT;
         break;
       }
     }
@@ -153,7 +171,7 @@ void Motion_Handler(){
       PID_SetConstants(0.6, 0.1, 1.2);  // Konstanta PID (kP, kI, kD).
     }
     else if(abs(linePos) > 8){
-      PID_SetConstants(0.26, 0.05, 1.2);  // Konstanta PID (kP, kI, kD).
+      PID_SetConstants(0.26, 0.07, 1.2);  // Konstanta PID (kP, kI, kD).
     }
     else{
       PID_SetConstants(0.15, 0.005, 0.78);  // Konstanta PID (kP, kI, kD).
@@ -167,7 +185,7 @@ void Motion_Handler(){
       else if(_head == HEAD_REAR){
         PID_Calculate(0, linePos);
         Drive(-xspeed, PID_GetU() * 1.0, -PID_GetU()); // Drive robot (X, w0, w1);   
-        //Drive(0, 0, PID_GetU() * 0.20); // Drive robot (X, w0, w1);     
+        //Drive(0, PID_GetU(), PID_GetU()); // Drive robot (X, w0, w1);
       }
     }
     else{
