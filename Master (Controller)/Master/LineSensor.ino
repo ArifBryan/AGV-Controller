@@ -99,7 +99,7 @@ int8_t LineSensor1_Position(uint8_t mode){
   uint8_t r = 0;
 
   switch(mode){
-    case 0:
+    case LINE_MODE_CENTER:
       for(uint8_t i = 0; i < 15; i++){
         if(sens1Data[i] && r == 0){r = i + 1;}
         if(sens1Data[14 - i] && l == 0){l = i + 1;}
@@ -112,7 +112,7 @@ int8_t LineSensor1_Position(uint8_t mode){
         else if(pos1 > 0){pos1 = 15;}
       }
     break;
-    case 1:
+    case LINE_MODE_RIGHT:
       for(uint8_t i = 0; i < 15; i++){
         if(sens1Data[14 - i] && l == 0){l = i + 1;}
         if(sens1Data[14 - i] && l != 0 ){r = i + 1;}
@@ -138,7 +138,7 @@ int8_t LineSensor1_Position(uint8_t mode){
         else if(pos1 > 0){pos1 = 15;}
       }
     break;
-    case 2:
+    case LINE_MODE_LEFT:
       for(uint8_t i = 0; i < 15; i++){
         if(sens1Data[i] && r == 0){r = i + 1;}
         if(sens1Data[i] && r != 0 ){l = i + 1;}
@@ -181,7 +181,7 @@ int8_t LineSensor2_Position(uint8_t mode){
   uint8_t r = 0;
 
   switch(mode){
-    case 0:
+    case LINE_MODE_CENTER:
       for(uint8_t i = 0; i < 15; i++){
         if(sens2Data[i] && r == 0){r = i + 1;}
         if(sens2Data[14 - i] && l == 0){l = i + 1;}
@@ -194,7 +194,7 @@ int8_t LineSensor2_Position(uint8_t mode){
         else if(pos2 > 0){pos2 = 15;}
       }
     break;
-    case 1:
+    case LINE_MODE_RIGHT:
       for(uint8_t i = 0; i < 15; i++){
         if(sens2Data[14 - i] && l == 0){l = i + 1;}
         if(sens2Data[14 - i] && l != 0 ){r = i + 1;}
@@ -220,7 +220,7 @@ int8_t LineSensor2_Position(uint8_t mode){
         else if(pos2 > 0){pos2 = 15;}
       }
     break;
-    case 2:
+    case LINE_MODE_LEFT:
       for(uint8_t i = 0; i < 15; i++){
         if(sens2Data[i] && r == 0){r = i + 1;}
         if(sens2Data[i] && r != 0 ){l = i + 1;}

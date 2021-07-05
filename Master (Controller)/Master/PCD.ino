@@ -31,6 +31,11 @@ void PCD_Init(void (*PCD1Callback_Handler)(uint8_t[]), void (*PCD2Callback_Handl
   
   _PCD1Handler = PCD1Callback_Handler;
   _PCD2Handler = PCD2Callback_Handler;
+  
+  pcd1.PCD_WriteRegister(pcd1.ComIrqReg, 0x7F);
+  pcd1.PICC_HaltA();
+  pcd2.PCD_WriteRegister(pcd2.ComIrqReg, 0x7F);
+  pcd2.PICC_HaltA();
 }
 
 void activateRec(MFRC522 mfrc522);

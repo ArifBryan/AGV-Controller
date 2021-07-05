@@ -41,6 +41,7 @@ uint8_t _driveLUT[5][9] = {
   {MSL, MFR, MSL, MFF, MSR, MFL, MSR, MSF}  // E
 };
 
+uint32_t loopTmr;
 uint8_t _drive;
 uint8_t _head;
 uint8_t _heading;
@@ -96,18 +97,17 @@ void Motion_Drive(uint8_t drive, int16_t vel){
         break;
         case MSL:
           if(_heading == HEADING_UNKNOWN) _head = 0;
-          _lineMode = LINE_MODE_RIGHT;
+          _lineMode = LINE_MODE_LEFT;
         break;
         case MSR:
           if(_heading == HEADING_UNKNOWN) _head = 0;
-          _lineMode = LINE_MODE_LEFT;
+          _lineMode = LINE_MODE_RIGHT;
         break;
         case MFF:
           if(_heading == HEADING_UNKNOWN) _head = 1;
           else{
             _HeadFlip();
             PID_Reset();
-            Slave_Init(SLAVE1ID);
             Slave_Init(SLAVE2ID);
             Slave_Init(SLAVE3ID);
           }
@@ -118,22 +118,20 @@ void Motion_Drive(uint8_t drive, int16_t vel){
           else{
             _HeadFlip();
             PID_Reset();
-            Slave_Init(SLAVE1ID);
             Slave_Init(SLAVE2ID);
             Slave_Init(SLAVE3ID);
           }
-          _lineMode = LINE_MODE_RIGHT;
+          _lineMode = LINE_MODE_LEFT;
         break;
         case MFR:
           if(_heading == HEADING_UNKNOWN) _head = 1;
           else{
             _HeadFlip();
             PID_Reset();
-            Slave_Init(SLAVE1ID);
             Slave_Init(SLAVE2ID);
             Slave_Init(SLAVE3ID);
           }
-          _lineMode = LINE_MODE_LEFT;
+          _lineMode = LINE_MODE_RIGHT;
         break;
       }
     }

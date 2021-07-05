@@ -1,6 +1,13 @@
 #include <Arduino.h>
 #include <Wire.h>
 #include <LiquidCrystal_I2C.h>
+#include <Watchdog.h>
+
+#define HEADING_UNKNOWN 0
+#define HEADING_NORTH   1
+#define HEADING_WEST    2
+#define HEADING_SOUTH   3
+#define HEADING_EAST    4
 
 #define DRIVE_STOP        0
 #define DRIVE_NORTH       1
@@ -12,17 +19,23 @@
 #define DRIVE_SOUTHEAST   7
 #define DRIVE_EAST        8
 
+#define LED_OFF   0
+#define LED_ON    1
+#define LED_FLASH 2
+
 #define PCD_RIGHT 0
 #define PCD_LEFT  1
 
-volatile bool PCD1_Detect;
-volatile bool PCD2_Detect;
+uint32_t dispTmr;
+uint8_t nav_dest1;
+uint8_t nav_dest2;
+char dispBuff[21];
 
 LiquidCrystal_I2C lcd(0x27, 20, 4);
+Watchdog watchdog;
 
 void setup() {
-  pinMode(LED_BUILTIN, OUTPUT);
-  digitalWrite(LED_BUILTIN, 0);
+  watchdog.enable(Watchdog::TIMEOUT_4S);
   Wire.setClock(400000);
   Wire.begin();
   Serial.begin(115200);
@@ -31,45 +44,44 @@ void setup() {
 
   Motion_Init();
   PowerMonitor_Init();
+  SerialInterface_Init(&SerialNodeMCU_CallbackHandler);
   PCD_Init(&PCD1_CallbackHandler, &PCD2_CallbackHandler);
   UserInterface_Init();
+  
   lcd.setCursor(0, 0);
   lcd.print("AGV");
-  Beeper_Enable(1);
-  delay(100);
-  Beeper_Enable(0);
+  UserInterface_Beep(100);
   Motion_Drive(DRIVE_STOP, 400);
 }
 
-uint32_t filterTmr;
-uint32_t loopTmr;
-uint32_t dispTmr;
-
-char dispBuff[21];
-
 void loop() {
+  UserInterface_Handler();
+  SerialInterface_Handler();
   LineSensor_Handler();
   PCD_Handler();  
   Mapping_Handler();
   Motion_Handler();
-
-  if(PCD1_Detect){
-    PCD1_Detect = false;
-    if(Motion_GetDrive() == DRIVE_NORTH){
-      //Motion_Drive(DRIVE_NORTHWEST, 200);
-    }
-    Beeper_Enable(1);
-  }  
-  if(PCD2_Detect){
-    PCD2_Detect = false;
-    if(Motion_GetDrive() == DRIVE_SOUTH){
-      //Motion_Drive(DRIVE_SOUTH, 400);
-    }
-    Beeper_Enable(1);
-  }    
+  watchdog.reset();
   
   if(millis() - dispTmr >= 250){
     dispTmr = millis();
+
+    if(Motion_GetDrive() == DRIVE_STOP){
+      if(Motion_GetHeading() == HEADING_UNKNOWN){
+        UserInterface_LED(LED_FLASH, LED_OFF);      
+      }
+      else{
+        UserInterface_LED(LED_ON, LED_OFF);          
+      }
+    }
+    else{
+      if(Motion_GetHeading() == HEADING_UNKNOWN){
+        UserInterface_LED(LED_FLASH, LED_FLASH);      
+      }
+      else{
+        UserInterface_LED(LED_OFF, LED_FLASH);          
+      }
+    }
 
     char key = Keypad_GetKey();
 
@@ -154,16 +166,14 @@ void loop() {
 //    lcd.print(PowerMonitor_GetVoltage());
 //    lcd.print("V   ");
 //
-    if((!PCD1_Detect) && (!PCD2_Detect)){
-      Beeper_Enable(0);
-    }   
-//  
-    Serial.print("Heading: ");  
-    Serial.println(Motion_GetHeading());
-    Serial.print("Drive  : ");  
-    Serial.println(Motion_GetDrive());
-    Serial.print("Head   : ");  
-    Serial.println(Motion_GetHead());
+//    Serial.print("Heading: ");  
+//    Serial.println(Motion_GetHeading());
+//    Serial.print("Drive  : ");  
+//    Serial.println(Motion_GetDrive());
+//    Serial.print("Pos    : ");  
+//    Serial.println(Mapping_ArrivedPosition());
+//    Serial.print("Dest   : ");  
+//    Serial.println(Mapping_GetDestination());
 //    Serial.print(',');
 //    Serial.print(PowerMonitor_GetVoltage());
 //    Serial.print(',');
@@ -172,17 +182,24 @@ void loop() {
   }
 }
 
+void SerialNodeMCU_CallbackHandler(char data[22]){
+  Serial.println(data);
+  sscanf(data, ">R%ddD%d", &nav_dest1, &nav_dest2);
+  if(Motion_GetDrive() == DRIVE_STOP)
+    Mapping_Destination(nav_dest1);
+//    Serial.println(nav_dest1);
+}
 
 void PCD1_CallbackHandler(uint8_t uid[4]){
   Serial.print("PCD1: ");
   Serial.println(Tag_Lookup(uid));
   Mapping_RFIDHandler(PCD_RIGHT, uid);
-  PCD1_Detect = true;
+  UserInterface_Beep(50);
 }
 
 void PCD2_CallbackHandler(uint8_t uid[4]){
   Serial.print("PCD2: ");
   Serial.println(Tag_Lookup(uid));
   Mapping_RFIDHandler(PCD_LEFT, uid);
-  PCD2_Detect = true;
+  UserInterface_Beep(50);
 }
