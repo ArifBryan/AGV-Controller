@@ -164,7 +164,7 @@ void Motion_Handler(){
   if(millis() - loopTmr >= 50){
     loopTmr = millis();
     
-    //Serial.println(linePos);
+    Serial.println(linePos);
     
     int16_t xspeed = 0; 
     if(_lineMode != LINE_MODE_CENTER){
