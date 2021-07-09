@@ -34,6 +34,7 @@ bool map_StopAtEndpoint;
 uint8_t map_ArrivedPosition;
 uint8_t map_Position;
 uint8_t map_Destination;
+int16_t _lastxVel;
 
 uint8_t map_JunctionTag[RFID_TAG_COUNT] = {1, 2, 3, 4, 5, 6, 7};
 
@@ -128,7 +129,7 @@ void Mapping_Handler(){
       else{
         map_ArrivedPosition = map_Destination;
         map_StopAtEndpoint = false;
-        Motion_Drive(DRIVE_STOP);
+        Motion_Drive(DRIVE_STOP, _lastxVel);
         UserInterface_Beep(500);
       }
     }
@@ -196,6 +197,8 @@ void Mapping_RFIDHandler(uint8_t pcdNum, uint8_t uid[4]){
     Motion_Drive(map_JunctionPath[map_Destination - 1][junction]);
     if(map_JunctionEndpoint[map_Destination - 1][0] == tagNum){
       map_StopAtEndpoint = true;
+      _lastxVel = Motion_GetSpeed();
+      Motion_SetSpeed(_lastxVel / 2);
     }
     else{
       map_StopAtEndpoint = false;

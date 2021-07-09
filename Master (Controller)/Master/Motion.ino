@@ -69,6 +69,14 @@ void Motion_ManualDrive(float xVel,float w1Vel,float w2){
   Drive(xVel, w1Vel, w2);
 }
 
+void Motion_SetSpeed(int16_t vel){
+  _xVel = vel; 
+}
+
+int16_t Motion_GetSpeed(){
+  return _xVel; 
+}
+
 uint8_t Motion_GetHeading(){
   return _heading;
 }
