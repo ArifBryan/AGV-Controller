@@ -65,14 +65,6 @@ void Motion_SetHeading(uint8_t heading){
   _heading = heading;
 }
 
-void Motion_SetSpeed(int16_t vel){
-  _xVel = vel; 
-}
-
-int16_t Motion_GetSpeed(){
-  return _xVel; 
-}
-
 void Motion_ManualDrive(float xVel,float w1Vel,float w2){
   Drive(xVel, w1Vel, w2);
 }
@@ -164,7 +156,7 @@ void Motion_Handler(){
   if(millis() - loopTmr >= 50){
     loopTmr = millis();
     
-    Serial.println(linePos);
+    //Serial.println(linePos);
     
     int16_t xspeed = 0; 
     if(_lineMode != LINE_MODE_CENTER){

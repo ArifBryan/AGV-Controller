@@ -31,12 +31,9 @@
 #define PATH_COUNT      4
 
 bool map_StopAtEndpoint;
-bool map_Paused;
 uint8_t map_ArrivedPosition;
 uint8_t map_Position;
 uint8_t map_Destination;
-uint8_t map_LastDrive;
-int16_t _lastxVel;
 
 uint8_t map_JunctionTag[RFID_TAG_COUNT] = {1, 2, 3, 4, 5, 6, 7};
 
@@ -74,21 +71,6 @@ uint8_t Mapping_GetPosition(){
   }
 }
 
-void Mapping_Pause(){
-  if(!map_Paused || Motion_GetDrive() != DRIVE_STOP){
-    map_Paused = true;
-    map_LastDrive = Motion_GetDrive();
-    Motion_Drive(DRIVE_STOP);
-  }
-}
-
-void Mapping_Start(){
-  if(map_Paused){
-    map_Paused = false;
-    Motion_Drive(map_LastDrive);
-  }
-}
-
 uint8_t Mapping_ArrivedPosition(){
   return map_ArrivedPosition;
 }
@@ -102,8 +84,8 @@ void Mapping_Destination(uint8_t dest){
   map_Destination = dest;
   if(dest != 0){
     map_ArrivedPosition = 0;
-    uint8_t heading = Motion_GetHeading();
-    switch(heading){
+    uint8_t headPos = Motion_GetHeading();
+    switch(headPos){
       case HEADING_NORTH:
         Motion_Drive(DRIVE_SOUTH);
         map_StopAtEndpoint = false;
@@ -121,8 +103,14 @@ void Mapping_Destination(uint8_t dest){
         map_StopAtEndpoint = false;
       break;
       case HEADING_UNKNOWN:
-        Motion_Drive(DRIVE_NORTH);
-        map_StopAtEndpoint = true;
+        if(LineSensor_NumDetected(Motion_GetHead()) >= 13 || map_StopAtEndpoint){
+          Motion_Drive(DRIVE_SOUTH);
+          map_StopAtEndpoint = false;
+        }
+        else{
+          Motion_Drive(DRIVE_NORTH);
+          map_StopAtEndpoint = true;
+        }
       break;
     }
   }
@@ -140,7 +128,7 @@ void Mapping_Handler(){
       else{
         map_ArrivedPosition = map_Destination;
         map_StopAtEndpoint = false;
-        Motion_Drive(DRIVE_STOP, _lastxVel);
+        Motion_Drive(DRIVE_STOP);
         UserInterface_Beep(500);
       }
     }
@@ -208,8 +196,6 @@ void Mapping_RFIDHandler(uint8_t pcdNum, uint8_t uid[4]){
     Motion_Drive(map_JunctionPath[map_Destination - 1][junction]);
     if(map_JunctionEndpoint[map_Destination - 1][0] == tagNum){
       map_StopAtEndpoint = true;
-      _lastxVel = Motion_GetSpeed();
-      Motion_SetSpeed(_lastxVel / 2);
     }
     else{
       map_StopAtEndpoint = false;
