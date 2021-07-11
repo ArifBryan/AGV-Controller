@@ -45,7 +45,7 @@ void loop() {
       Motor_Drive(0);
     }
     
-    Serial.println(positionActual);
+    //Serial.println(positionActual);
   }
 
   Encoder_Handler();
@@ -69,6 +69,8 @@ void I2CReceive_Handler(uint8_t Command, uint8_t *Data, uint8_t Len){
     break;
     case(10):
       memcpy((float*)&var_SetPoint, Data, 4);
+      // Print setpoint value.
+      Serial.println(var_SetPoint);
     break;
     default:
     break;
