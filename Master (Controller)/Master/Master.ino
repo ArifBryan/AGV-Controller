@@ -101,6 +101,15 @@ void loop() {
       else if(key == '3'){
         Mapping_Destination(4);
       }
+            else if(key == '4'){
+        Mapping_Destination(5);
+      }
+            else if(key == '5'){
+        Mapping_Destination(6);
+      }
+            else if(key == '6'){
+        Mapping_Destination(7);
+      }
 //      else if(key == '4'){
 //        Motion_ManualDrive(100, -70, -90);
 //      }

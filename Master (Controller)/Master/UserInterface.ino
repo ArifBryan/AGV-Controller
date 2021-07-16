@@ -17,7 +17,7 @@ uint8_t _ledRedState;
 uint8_t _ledGrnState;
 
 void UserInterface_Init(){
-  lcd.begin(20, 4);
+  lcd.begin();
   lcd.backlight();
   for(uint8_t i = 0; i < 4; i++){
     pinMode(_keypad_pins[i], OUTPUT);
